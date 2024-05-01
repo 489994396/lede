@@ -1,5 +1,7 @@
 I18N: [English](README_EN.md) | [简体中文](README.md) | [日本語](README_JA.md)
 
+注：本项目fork自LEDE项目：https://github.com/coolsnowwolf/lede ，主要加入了对西瓜皮板子的定制化适配
+
 ## 注意
 
 1. **不要用 root 用户进行编译**
