@@ -20,6 +20,23 @@ define Build/boot-common
 	$(CP) $(IMAGE_KERNEL) $@.boot/kernel.img
 endef
 
+define Build/boot-combined
+	# This creates a new folder copies the dtbs (as rockchip*.dtb)
+	# and the kernel image (as kernel.img)
+	rm -fR $@.boot
+	mkdir -p $@.boot
+
+	i=0; \
+	for dts in $(DEVICE_DTS); do \
+		dts=$$(echo $${dts} | cut -d'/' -f2); \
+		$(CP) $(KDIR)/image-$$(echo $${dts} | cut -d'/' -f2).dtb $@.boot/rockchip$$(perl -e 'printf "%b\n",'$$i).dtb; \
+		let i+=1; \
+	done
+
+	$(LN) rockchip0.dtb $@.boot/rockchip.dtb
+	$(CP) $(IMAGE_KERNEL) $@.boot/kernel.img
+endef
+
 define Build/boot-script
 	# Make an U-boot image and copy it to the boot partition
 	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d $(if $(1),$(1),mmc).bootscript $@.boot/boot.scr
@@ -73,7 +90,7 @@ define Device/Default
   DEVICE_DTS = rockchip/$$(SOC)-$(lastword $(subst _, ,$(1)))
 endef
 
-ifndef CONFIG_LINUX_5_15
+ifdef CONFIG_LINUX_6_1
   DTS_CPPFLAGS += -DDTS_NO_LEGACY
 endif
 
